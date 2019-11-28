@@ -1,46 +1,4 @@
-#include <iostream>
-#include <string>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include<tuple> // for tuple 
-#include <vector>
-
-
-#define WIDTH 8
-#define HEIGHT 8
-
-struct NodeFeatures {
-	int cost;
-	int x, y;
-	char type;
-	short west, north, east, south;
-	bool explored, frontiered;
-};
-enum SearchAlgorithm { BFS, DFS, IDS, ASTAR, GBFS };
-class Node {
-public:
-	int cost;
-	int x, y;
-	Node* parent;
-	char type;
-	short west, north, east, south;
-	bool explored;
-	bool frontiered;
-	Node(struct NodeFeatures *nodefeats)
-		: x(nodefeats->x),
-		y(nodefeats->y),
-		west(nodefeats->west),
-		north(nodefeats->north),
-		east(nodefeats->east),
-		south(nodefeats->south),
-		cost(nodefeats->cost),
-		type(nodefeats->type),
-		explored(nodefeats->explored),
-		frontiered(frontiered)
-	{}
-	~Node() {}
-};
+#include "CSE4082_Project.h"
 
 struct NodeFeatures* ParseNodeFeatures(std::string word, int x, int y){
 	int cost=NULL;
