@@ -8,6 +8,10 @@ struct NodeFeatures* ParseNodeFeatures(std::string word, int x, int y){
 		cost = word[0] - '0';
 		type = word[0] == '1' ? 'N' : 'T';
 	}
+	else if (word[0] == 'S') {
+		cost = 0;
+		type = word[0];
+	}
 	else {
 		cost = 1;
 		type = word[0];
@@ -22,36 +26,83 @@ struct NodeFeatures* ParseNodeFeatures(std::string word, int x, int y){
 	struct NodeFeatures* node_feats = new NodeFeatures{ cost, x, y, type, west, north, east, south, explored, frontiered };
 	return node_feats;
 }
-
 std::vector<Node*> ActionSpace(Node* current_node,
-				std::vector<std::vector<Node*>> StateMatrix) 
+								std::vector<std::vector<Node*>> StateMatrix,
+								SearchAlgorithm search_algorithm) 
 {
+
+
 	std::vector<Node*> action_vector;
 	int x = current_node->x;
 	int y = current_node->y;
 
-	if (current_node->east) {
-		action_vector.emplace_back(StateMatrix[x][y + 1]);
-	}
-	if (current_node->south) {
+	switch (search_algorithm)
+	{
+	case BFS:
+	{
 
-		action_vector.emplace_back(StateMatrix[x+1][y]);
-	}
-	if(current_node->west){
-		 
-		action_vector.emplace_back(StateMatrix[x][y - 1]);
-	}
-	if (current_node->north) {
+		if (current_node->east) {
+			action_vector.emplace_back(StateMatrix[x][y + 1]);
+		}
+		if (current_node->south) {
 
-		action_vector.emplace_back(StateMatrix[x - 1][y]);
+			action_vector.emplace_back(StateMatrix[x + 1][y]);
+		}
+		if (current_node->west) {
+
+			action_vector.emplace_back(StateMatrix[x][y - 1]);
+		}
+		if (current_node->north) {
+
+			action_vector.emplace_back(StateMatrix[x - 1][y]);
+		}
 	}
+		break;
+	case DFS:
+		break;
+	case IDS:
+		break;
+	case UCS:
+	{
+
+		if (current_node->east) {
+			action_vector.emplace_back(StateMatrix[x][y + 1]);
+		}
+		if (current_node->south) {
+
+			action_vector.emplace_back(StateMatrix[x + 1][y]);
+		}
+		if (current_node->west) {
+
+			action_vector.emplace_back(StateMatrix[x][y - 1]);
+		}
+		if (current_node->north) {
+
+			action_vector.emplace_back(StateMatrix[x - 1][y]);
+		}
+		
+	}
+		break;
+	case ASTAR:
+		break;
+	case GBFS:
+		break;
+	default:
+		break;
+	}
+
+	
 
 	return action_vector;
 }
+bool CompareTwoNodesCosts(Node* n1, Node* n2) {
+	return CurrentPathCost(n1) < CurrentPathCost(n2);
+}
+
 std::ostream& operator << (std::ostream& out, Node *c)
 {
 	out << "|cost: " << c->cost;
-	out << " |x, y: " << "(" << c->x << ", " << c->y << ")";
+	out << " |x, y: " << "(" << c->x + 1 << ", " << c->y + 1 << ")";
 	out << " |type: " << c->type;
 	out << " |explored: " << c->explored;
 	out << " |frontiered: " << c->frontiered;
@@ -70,6 +121,104 @@ void ReturnPath(Node* end_node) {
 		current_printed_node = current_printed_node->parent;
 	}
 	std::cout << "Total Cost: " << total_cost << std::endl;
+}
+void VisualizeFrontier(std::vector<Node*> frontier, int depth) {
+
+	std::cout << "DEPTH: " << depth << "\n";
+	for (auto cur_frontier : frontier) {
+
+		std::cout << "(" << cur_frontier->x +1 << ", " << cur_frontier->y+1 << ")\n";
+	}
+	std::cout << "-----------\n";
+}
+Node* ExecuteBFS(std::vector<std::vector<Node*>> StateMatrix,
+	std::vector<Node*> frontier,
+	std::vector<Node*> explored,
+	bool visualize_frontier)
+{
+	//SearchAlgorithmResult result = new SearchAlgorithmResult(){ false, NULL };
+	int i = 0;
+	std::cout << "BFS is selected." << std::endl;
+	while (true)
+	{
+		if (frontier.empty()) {
+			std::cout << "Failure... Path didn't found.\n";
+			return NULL;
+		}
+		Node* current_node;
+		current_node = frontier[0];
+		current_node->frontiered = false;
+		frontier.erase(frontier.begin());
+
+		explored.emplace_back(current_node);
+		current_node->explored = true;
+		auto action_vector = ActionSpace(current_node, StateMatrix, BFS);
+		for (Node* cur_child : action_vector)
+		{
+			if (!cur_child->explored && !cur_child->frontiered) {
+				cur_child->parent = current_node;
+				if (cur_child->type == 'G') {
+					cur_child->explored = true;
+					return cur_child;
+				}
+				cur_child->frontiered = true;
+				frontier.emplace_back(cur_child);
+			}
+		}
+		if (visualize_frontier)
+			VisualizeFrontier(frontier, i);
+		i++;
+	}
+}
+int CurrentPathCost(Node* current_node) {
+
+	int total_cost = 0;
+	while (current_node)
+	{
+		total_cost += current_node->cost;
+		current_node = current_node->parent;
+	}
+	return total_cost;
+}
+
+Node* ExecuteDFS(std::vector<std::vector<Node*>> StateMatrix,
+	std::vector<Node*> frontier,
+	std::vector<Node*> explored,
+	bool visualize_frontier)
+{
+	//SearchAlgorithmResult result = new SearchAlgorithmResult(){ false, NULL };
+	int i = 0;
+	std::cout << "DFS is selected." << std::endl;
+	while (true)
+	{
+		if (frontier.empty()) {
+			std::cout << "Failure... Path didn't found.\n";
+			return NULL;
+		}
+		Node* current_node;
+		current_node = frontier[0];
+		current_node->frontiered = false;
+		frontier.erase(frontier.begin());
+
+		explored.emplace_back(current_node);
+		current_node->explored = true;
+		auto action_vector = ActionSpace(current_node, StateMatrix, DFS);
+		for (Node* cur_child : action_vector)
+		{
+			if (!cur_child->explored && !cur_child->frontiered) {
+				cur_child->parent = current_node;
+				if (cur_child->type == 'G') {
+					cur_child->explored = true;
+					return cur_child;
+				}
+				cur_child->frontiered = true;
+				frontier.emplace_back(cur_child);
+			}
+		}
+		if (visualize_frontier)
+			VisualizeFrontier(frontier, i);
+		i++;
+	}
 }
 int main(int argc, char* argv[])
 {
@@ -106,7 +255,7 @@ int main(int argc, char* argv[])
 			start_row = row;
 		}
 	}
-	SearchAlgorithm s = BFS;
+	SearchAlgorithm s = UCS;
 	
 
 	if (StateMatrix[start_row][start_column]->type == 'G') {
@@ -122,44 +271,72 @@ int main(int argc, char* argv[])
 	switch (s) {
 	case BFS:
 	{
-
-
-		std::cout << "BFS is selected." << std::endl;
-		while (true)
-		{
-			if (frontier.empty()) {
-				std::cout << "Failure... Path didn't found.\n";
-				return 1;
-			}
-			Node* current_node;
-			current_node = frontier[0];
-			current_node->frontiered = false;
-			frontier.erase(frontier.begin());
-
-			explored.emplace_back(current_node);
-			current_node->explored = true;
-			auto action_vector = ActionSpace(current_node, StateMatrix);
-			for (Node* cur_child : action_vector)
-			{
-				if (!cur_child->explored && !cur_child->frontiered) {
-					cur_child->parent = current_node;
-					if (cur_child->type == 'G') {
-						cur_child->explored = true;
-						ReturnPath(cur_child);
-						return 1;
-					}
-					cur_child->frontiered = true;
-					frontier.emplace_back(cur_child);
-				}
-			}
+		Node* result = ExecuteBFS(StateMatrix, frontier, explored, false);
+		if (result) {
+			ReturnPath(result);
+		}
+	}
+		break;
+	case UCS:
+	{
+		Node* result = ExecuteUCS(StateMatrix, frontier, explored, true);
+		if (result) {
+			ReturnPath(result);
 		}
 	}
 		break;
 	case DFS:
-		break;
+	{
+		Node* result = ExecuteDFS(StateMatrix, frontier, explored, true);
+		if (result) {
+			ReturnPath(result);
+		}
+	}
+	break;
 
 	default:
 		;
 	}
 	return 0;
+}
+
+Node* ExecuteUCS(std::vector<std::vector<Node*>> StateMatrix,
+	std::vector<Node*> frontier,
+	std::vector<Node*> explored,
+	bool visualize_frontier)
+{
+	//SearchAlgorithmResult result = new SearchAlgorithmResult(){ false, NULL };
+	int i = 0;
+	std::cout << "UCS is selected." << std::endl;
+	while (true)
+	{
+		if (frontier.empty()) {
+			std::cout << "Failure... Path didn't found.\n";
+			return NULL;
+		}
+		Node* current_node;
+		current_node = frontier[0];
+		current_node->frontiered = false;
+		frontier.erase(frontier.begin());
+
+		explored.emplace_back(current_node);
+		current_node->explored = true;
+		auto action_vector = ActionSpace(current_node, StateMatrix, UCS);
+		for (Node* cur_child : action_vector)
+		{
+			if (!cur_child->explored && !cur_child->frontiered) {
+				cur_child->parent = current_node;
+				if (cur_child->type == 'G') {
+					cur_child->explored = true;
+					return cur_child;
+				}
+				cur_child->frontiered = true;
+				frontier.emplace_back(cur_child);
+			}
+		}
+		std::sort(frontier.begin(), frontier.end(), CompareTwoNodesCosts);
+		if (visualize_frontier)
+			VisualizeFrontier(frontier, i);
+		i++;
+	}
 }
