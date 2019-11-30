@@ -1,7 +1,7 @@
 #include "CSE4082_Project.h"
 
 int CalculateHeuristic(Node* current_node) {
-	
+
 	if (current_node->type == 'G')
 		return 0;
 
@@ -16,9 +16,9 @@ int CalculateHeuristic(Node* current_node) {
 	}
 	return min_manhattan_distance;
 }
-struct NodeFeatures* ParseNodeFeatures(std::string word, int x, int y){
-	int cost=NULL;
-	char type=NULL;
+struct NodeFeatures* ParseNodeFeatures(std::string word, int x, int y) {
+	int cost = NULL;
+	char type = NULL;
 
 	if (word[0] == '1' || word[0] == '7') {
 		cost = word[0] - '0';
@@ -39,12 +39,12 @@ struct NodeFeatures* ParseNodeFeatures(std::string word, int x, int y){
 	short east = (short)(word[3] == '.');
 	short south = (short)(word[4] == '.');
 	int depth = 0;
-	struct NodeFeatures* node_feats = new NodeFeatures{ cost, x, y, type, west, north, east, south, explored, frontiered, depth};
+	struct NodeFeatures* node_feats = new NodeFeatures{ cost, x, y, type, west, north, east, south, explored, frontiered, depth };
 	return node_feats;
 }
-Node* ActionSpace(Node* current_node, std::vector<Node*> &frontier,
-				std::vector<std::vector<Node*>> StateMatrix,
-				SearchAlgorithm search_algorithm, bool visualize_frontier, int depth_limit) 
+Node* ActionSpace(Node* current_node, std::vector<Node*>& frontier,
+	std::vector<std::vector<Node*>> StateMatrix,
+	SearchAlgorithm search_algorithm, bool visualize_frontier, int depth_limit)
 {
 
 
@@ -72,7 +72,7 @@ Node* ActionSpace(Node* current_node, std::vector<Node*> &frontier,
 	case BFS:
 	{
 
-		
+
 		for (Node* cur_child : action_vector)
 		{
 			if (!cur_child->explored && !cur_child->frontiered) {
@@ -89,10 +89,10 @@ Node* ActionSpace(Node* current_node, std::vector<Node*> &frontier,
 			VisualizeFrontier(frontier, i);
 		i++;
 	}
-		break;
+	break;
 	case DFS:
 	{
-		
+
 		std::reverse(action_vector.begin(), action_vector.end());
 		for (Node* cur_child : action_vector)
 		{
@@ -112,10 +112,10 @@ Node* ActionSpace(Node* current_node, std::vector<Node*> &frontier,
 		i++;
 
 	}
-		break;
+	break;
 	case IDS:
 	{
-		
+
 		for (Node* cur_child : action_vector)
 		{
 			if (!cur_child->explored && !cur_child->frontiered) {
@@ -132,29 +132,7 @@ Node* ActionSpace(Node* current_node, std::vector<Node*> &frontier,
 			VisualizeFrontier(frontier, i);
 		i++;
 	}
-		break;
-	case UCS:
-	{
-
-
-		for (Node* cur_child : action_vector)
-		{
-			if (!cur_child->explored && !cur_child->frontiered) {
-				cur_child->parent = current_node;
-				if (cur_child->type == 'G') {
-					cur_child->explored = true;
-					return cur_child;
-				}
-				cur_child->frontiered = true;
-				frontier.emplace_back(cur_child);
-			}
-		}
-		std::sort(frontier.begin(), frontier.end(), CompareTwoNodesCosts);
-		if (visualize_frontier)
-			VisualizeFrontier(frontier, i);
-		i++;
-	}
-		break;
+	break;
 	case ASTAR:
 	{
 		for (Node* cur_child : action_vector)
@@ -174,7 +152,7 @@ Node* ActionSpace(Node* current_node, std::vector<Node*> &frontier,
 			VisualizeFrontier(frontier, i);
 		i++;
 	}
-		break;
+	break;
 	case GBFS:
 	{
 		for (Node* cur_child : action_vector)
@@ -194,14 +172,14 @@ Node* ActionSpace(Node* current_node, std::vector<Node*> &frontier,
 			VisualizeFrontier(frontier, i);
 		i++;
 	}
-		break;
+	break;
 	case DLS:
 	{
 		std::reverse(action_vector.begin(), action_vector.end());
 		for (Node* cur_child : action_vector)
 		{
 			if (!cur_child->explored && !cur_child->frontiered) {
-				cur_child->parent = current_node;				
+				cur_child->parent = current_node;
 				cur_child->frontiered = true;
 				frontier.emplace_back(cur_child);
 			}
@@ -215,7 +193,7 @@ Node* ActionSpace(Node* current_node, std::vector<Node*> &frontier,
 		break;
 	}
 
-	
+
 
 	return NULL;
 }
@@ -228,7 +206,7 @@ bool CompareTwoNodesHeuristics(Node* n1, Node* n2) {
 bool CompareTwoNodesTotalCosts(Node* n1, Node* n2) {
 	return (CurrentPathCost(n1) + CalculateHeuristic(n1)) < (CurrentPathCost(n2) + CalculateHeuristic(n2));
 }
-std::ostream& operator << (std::ostream& out, Node *c)
+std::ostream& operator << (std::ostream& out, Node* c)
 {
 	out << "|cost: " << c->cost;
 	out << " |x, y: " << "(" << c->x + 1 << ", " << c->y + 1 << ")";
@@ -244,8 +222,8 @@ void ReturnPath(Node* end_node) {
 	std::cout << "Path Found" << std::endl;
 	while (current_printed_node != NULL) {
 
-		if(current_printed_node->type != 'S')
-		total_cost += current_printed_node->cost;
+		if (current_printed_node->type != 'S')
+			total_cost += current_printed_node->cost;
 		std::cout << current_printed_node << std::endl;
 		current_printed_node = current_printed_node->parent;
 	}
@@ -256,7 +234,7 @@ void VisualizeFrontier(std::vector<Node*> frontier, int depth) {
 	std::cout << "DEPTH: " << depth << "\n";
 	for (auto cur_frontier : frontier) {
 
-		std::cout << "(" << cur_frontier->x +1 << ", " << cur_frontier->y+1 << ")\n";
+		std::cout << "(" << cur_frontier->x + 1 << ", " << cur_frontier->y + 1 << ")\n";
 	}
 	std::cout << "-----------\n";
 }
@@ -285,7 +263,7 @@ Node* ExecuteDFS(std::vector<std::vector<Node*>> StateMatrix,
 		if (result_child) {
 			return result_child;
 		}
-		
+
 	}
 }
 Node* ExecuteBFS(std::vector<std::vector<Node*>> StateMatrix,
@@ -406,14 +384,14 @@ Node* ExecuteASTAR(std::vector<std::vector<Node*>> StateMatrix,
 }
 int main(int argc, char* argv[])
 {
-    std::ifstream inFile;
-    
-    inFile.open("maze.txt");
-    if (!inFile) {
-        std::cout << "Unable to open Maze File";
-        exit(1);
-    }
-	
+	std::ifstream inFile;
+
+	inFile.open("maze.txt");
+	if (!inFile) {
+		std::cout << "Unable to open Maze File";
+		exit(1);
+	}
+
 	if (!inFile.is_open()) return 0;
 
 	int idx = 0;
@@ -421,7 +399,7 @@ int main(int argc, char* argv[])
 	std::vector< std::vector< Node* > > StateMatrix;
 	StateMatrix.resize(WIDTH, std::vector<Node*>(HEIGHT));
 
-	int start_row =NULL, start_column = NULL;
+	int start_row = NULL, start_column = NULL;
 
 	while (inFile >> word)
 	{
@@ -441,7 +419,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	SearchAlgorithm s = ASTAR;
-	
+
 
 	if (StateMatrix[start_row][start_column]->type == 'G') {
 		ReturnPath(StateMatrix[start_row][start_column]);
@@ -452,7 +430,7 @@ int main(int argc, char* argv[])
 
 	StateMatrix[start_row][start_column]->frontiered = true;
 	frontier.emplace_back((StateMatrix[start_row][start_column]));
-	
+
 	switch (s) {
 	case BFS:
 	{
@@ -461,7 +439,7 @@ int main(int argc, char* argv[])
 			ReturnPath(result);
 		}
 	}
-		break;
+	break;
 	case UCS:
 	{
 		Node* result = ExecuteUCS(StateMatrix, frontier, explored, true);
@@ -469,7 +447,7 @@ int main(int argc, char* argv[])
 			ReturnPath(result);
 		}
 	}
-		break;
+	break;
 	case DFS:
 	{
 		Node* result = ExecuteDFS(StateMatrix, frontier, explored, true);
@@ -480,7 +458,7 @@ int main(int argc, char* argv[])
 	break;
 	case IDS:
 	{
-		Node* result = ExecuteIDS(StateMatrix, frontier, explored, true);
+		Node* result = ExecuteIDS(StateMatrix, frontier, explored, true, start_row, start_column);
 		if (result) {
 			ReturnPath(result);
 		}
@@ -509,44 +487,58 @@ int main(int argc, char* argv[])
 Node* ExecuteIDS(std::vector<std::vector<Node*>> StateMatrix,
 	std::vector<Node*> frontier,
 	std::vector<Node*> explored,
-	bool visualize_frontier)
+	bool visualize_frontier, int start_row, int start_column)
 {
 	//SearchAlgorithmResult result = new SearchAlgorithmResult(){ false, NULL };
 	int depth = 0;
 	std::cout << "IDS is selected." << std::endl;
-	while(true)
+	while (true)
 	{
 		Node* result = ExecuteDLS(StateMatrix, frontier, explored, visualize_frontier, depth);
+		std::cout << depth;
 		depth++;
 		if (result) return result;
+		for (int i = 0; i < StateMatrix.size(); i++)
+		{
+			for (int j = 0; j < StateMatrix[i].size(); j++)
+			{
+				StateMatrix[i][j]->explored = false;
+			}
+		}
+		//StateMatrix[start_row][start_column]->frontiered = true;
+		//frontier.emplace_back((StateMatrix[start_row][start_column]));
 	}
 }
 Node* RecursiveDLS(std::vector<std::vector<Node*>> StateMatrix,
 	std::vector<Node*> frontier, std::vector<Node*> explored,
-	bool visualize_frontier, int limit){
-		if (frontier.empty()) return NULL;
-		Node* current_node;
-		current_node = frontier[frontier.size() - 1];
-		current_node->frontiered = false;
-		frontier.erase(frontier.end() - 1);
+	bool visualize_frontier, int limit)
+{
+	Node* result;
+	if (frontier.empty()) return NULL;
+	Node* current_node;
+	current_node = frontier[frontier.size() - 1];
+	current_node->frontiered = false;
+	frontier.erase(frontier.end() - 1);
 
-		if  (current_node->type == 'G') return current_node;
-		else if  (limit == 0) return NULL;
-		else{	
-			Node* result_child = ActionSpace(current_node, frontier, StateMatrix, DLS, visualize_frontier);
-			for (Node* cur_child : frontier)
-			{
-				std::vector<Node*> frontierRec;
-				std::vector<Node*> exploredRec;
-				frontierRec.emplace_back(frontier[frontier.size() - 1]);
-				RecursiveDLS(StateMatrix, frontierRec, exploredRec, visualize_frontier, limit - 1);
-			}			
+	explored.emplace_back(current_node);
+	current_node->explored = true;
+
+	if (current_node->type == 'G') return current_node;
+	else if (limit == 0) return NULL;
+	else {
+		Node* result_child = ActionSpace(current_node, frontier, StateMatrix, DLS, visualize_frontier);
+		for (Node* cur_child : frontier)
+		{
+			std::vector<Node*> frontierRec;
+			std::vector<Node*> exploredRec;
+			frontierRec.emplace_back(frontier[frontier.size() - 1]);
+			frontier.erase(frontier.end() - 1);
+			result = RecursiveDLS(StateMatrix, frontierRec, exploredRec, visualize_frontier, limit - 1);
+			if (result) return result;
 		}
-
-
-
 		return NULL;
 	}
+}
 Node* ExecuteDLS(std::vector<std::vector<Node*>> StateMatrix,
 	std::vector<Node*> frontier, std::vector<Node*> explored,
 	bool visualize_frontier, int limit)
