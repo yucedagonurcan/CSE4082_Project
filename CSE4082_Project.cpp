@@ -287,11 +287,12 @@ Node* ExecuteDFS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*>
 		// Send the current node to the ActionSpace, collect if it finds the goal node in this depth.
 		Node* result_child = ActionSpace(current_node, frontier, StateMatrix, DFS, visualize_vector);
 		if (result_child) {
+			std::cout << "\nExplored Set:\n";
+			VisualizeVector(explored);
 			return result_child;
 		}
 	}
-	std::cout << "\nExplored Set:\n";
-	VisualizeVector(explored);
+	
 }
 // Execution of BFS
 Node* ExecuteBFS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*> frontier, std::vector<Node*> explored, bool visualize_vector)
@@ -319,15 +320,14 @@ Node* ExecuteBFS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*>
 		// Send the current node to the ActionSpace, collect if it finds the goal node in this depth.
 		Node* result_child = ActionSpace(current_node, frontier, StateMatrix, BFS, visualize_vector);
 		if (result_child) {
+			std::cout << "\nExplored Set:\n";
+			VisualizeVector(explored);
 			return result_child;
 		}
-	}
-	std::cout << "\nExplored Set:\n";
-	VisualizeVector(explored);
-	
+	}	
 }
 
-// Calcualtes the current path cost starting from the node to its greatest parent.
+// Calculates the current path cost starting from the node to its greatest parent.
 int CurrentPathCost(Node* current_node) {
 
 	int total_cost = 0;
@@ -365,12 +365,11 @@ Node* ExecuteUCS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*>
 		// Send the current node to the ActionSpace, collect if it finds the goal node in this depth.
 		Node* result_child = ActionSpace(current_node, frontier, StateMatrix, UCS, visualize_vector);
 		if (result_child) {
+			std::cout << "\nExplored Set:\n";
+			VisualizeVector(explored);
 			return result_child;
 		}
 	}
-	std::cout << "\nExplored Set:\n";
-	VisualizeVector(explored);
-
 }
 // Execution of GBFS
 Node* ExecuteGBFS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*> frontier, std::vector<Node*> explored, bool visualize_vector) {
@@ -507,7 +506,7 @@ Node* RecursiveDLS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node
 	}
 
 }
-// Exectuion of DLS for IDS.
+// Execution of DLS for IDS.
 Node* ExecuteDLS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*> frontier, std::vector<Node*> explored, bool visualize_vector, int limit)
 {
 	return  RecursiveDLS(StateMatrix, frontier, explored, visualize_vector, limit);
