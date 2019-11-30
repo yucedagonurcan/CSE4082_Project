@@ -9,7 +9,6 @@
 #define WIDTH 8
 #define HEIGHT 8
 
-
 struct NodeFeatures {
 	int cost;
 	int x, y;
@@ -18,7 +17,7 @@ struct NodeFeatures {
 	bool explored, frontiered;
 	int depth;
 };
-enum SearchAlgorithm { BFS, DFS, IDS, UCS, ASTAR, GBFS, DLS};
+enum SearchAlgorithm { BFS, DFS, IDS, UCS, ASTAR, GBFS, DLS };
 class Node {
 public:
 	int cost;
@@ -45,21 +44,20 @@ public:
 	~Node() {}
 };
 std::vector<Node*> GoalNodes;
+std::vector<Node*> GlobalExplored;
 int CurrentPathCost(Node* current_node);
 bool CompareTwoNodesCosts(Node* n1, Node* n2);
 bool CompareTwoNodesHeuristics(Node* n1, Node* n2);
 bool CompareTwoNodesTotalCosts(Node* n1, Node* n2);
 struct NodeFeatures* ParseNodeFeatures(std::string word, int x, int y);
-Node* ActionSpace(Node* current_node, std::vector<Node*> &frontier,
-	std::vector<std::vector<Node*>> StateMatrix,
-	SearchAlgorithm search_algorithm, bool visualize_frontier, int depth_limit=NULL);
+Node* ActionSpace(Node* current_node, std::vector<Node*> &frontier, std::vector<std::vector<Node*>> StateMatrix, SearchAlgorithm search_algorithm, bool visualize_vector, int depth_limit = NULL);
 std::ostream& operator << (std::ostream& out, Node* c);
 void ReturnPath(Node* end_node);
-void VisualizeFrontier(std::vector<Node*> frontier, int depth);
-Node* ExecuteBFS(std::vector<std::vector<Node*>> StateMatrix,std::vector<Node*> frontier,std::vector<Node*> explored, bool visualize_frontier);
-Node* ExecuteUCS(std::vector<std::vector<Node*>> StateMatrix,std::vector<Node*> frontier,std::vector<Node*> explored, bool visualize_frontier);
-Node* ExecuteDFS(std::vector<std::vector<Node*>> StateMatrix,std::vector<Node*> frontier,std::vector<Node*> explored, bool visualize_frontier);
-Node* ExecuteIDS(std::vector<std::vector<Node*>> StateMatrix,std::vector<Node*> frontier,std::vector<Node*> explored, bool visualize_frontier, int start_row, int start_column);
-Node* ExecuteDLS(std::vector<std::vector<Node*>> StateMatrix,std::vector<Node*> frontier,std::vector<Node*> explored, bool visualize_frontier, int depth);
-Node* ExecuteGBFS(std::vector<std::vector<Node*>> StateMatrix,std::vector<Node*> frontier,std::vector<Node*> explored, bool visualize_frontier);
-Node* ExecuteASTAR(std::vector<std::vector<Node*>> StateMatrix,std::vector<Node*> frontier,std::vector<Node*> explored, bool visualize_frontier);
+void VisualizeVector(std::vector<Node*>& frontier);
+Node* ExecuteBFS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*> frontier, std::vector<Node*> explored, bool visualize_vector);
+Node* ExecuteUCS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*> frontier, std::vector<Node*> explored, bool visualize_vector);
+Node* ExecuteDFS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*> frontier, std::vector<Node*> explored, bool visualize_vector);
+Node* ExecuteIDS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*> frontier, std::vector<Node*> explored, bool visualize_vector);
+Node* ExecuteDLS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*> frontier, std::vector<Node*> explored, bool visualize_vector, int depth);
+Node* ExecuteGBFS(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*> frontier, std::vector<Node*> explored, bool visualize_vector);
+Node* ExecuteASTAR(std::vector<std::vector<Node*>> StateMatrix, std::vector<Node*> frontier, std::vector<Node*> explored, bool visualize_vector);
